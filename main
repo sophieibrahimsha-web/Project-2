@@ -175,9 +175,8 @@ class CalendarView(tk.Toplevel):
       MainDashboard(root)
       root.mainloop()
 
-# ------------------------
 # Progress View (Plant Growth)
-# ------------------------
+
 class ProgressView(tk.Toplevel):
   def __init__(self, parent, controller):
       super().__init__(parent)
@@ -542,66 +541,67 @@ class TaskPopup:
       self.controller = dashboard.controller
       self.mode = mode
       self.task_obj = task_obj
+# Create popup window
       self.win = tk.Toplevel()
       self.win.title("Add Task" if mode=="add" else "Edit Task")
       self.win.geometry("400x450")
 
 
 
-
+# Input for title
       tk.Label(self.win, text="Title").pack()
       self.title_entry = tk.Entry(self.win, width=40)
       self.title_entry.pack()
 
 
 
-
+# Input for description
       tk.Label(self.win, text="Description").pack()
       self.desc_entry = tk.Entry(self.win, width=40)
       self.desc_entry.pack()
 
 
 
-
+# Dropdown for category
       tk.Label(self.win, text="Category").pack()
       self.cat_box = ttk.Combobox(self.win, values=category_options)
       self.cat_box.pack()
 
 
 
-
+# Due date selector
       tk.Label(self.win, text="Due Date").pack()
       self.date_entry = DateEntry(self.win, date_pattern="yyyy-mm-dd")
       self.date_entry.pack()
 
 
 
-
+# Dropdown for priority
       tk.Label(self.win, text="Priority").pack()
       self.pri_box = ttk.Combobox(self.win, values=priority_options)
       self.pri_box.pack()
 
 
 
-
+# Dropdown for status
       tk.Label(self.win, text="Status").pack()
       self.status_box = ttk.Combobox(self.win, values=completion_options)
       self.status_box.pack()
 
 
 
-
+# Save button
       tk.Button(self.win, text="Save", command=self.save).pack(pady=20)
 
 
 
-
+# Load task data when editing 
       if mode=="edit":
           self.load()
 
 
 
-
+# Load task data into form 
   def load(self):
       t = self.task_obj
       self.title_entry.insert(0, t.title)
@@ -613,7 +613,7 @@ class TaskPopup:
 
 
 
-
+# Create or update task and store it 
   def save(self):
       new = Task(
           title=self.title_entry.get(),
@@ -623,10 +623,12 @@ class TaskPopup:
           priority=self.pri_box.get(),
           completion_status=self.status_box.get()
       )
-      if self.mode=="add":
+     # Add or update based on mode
+    if self.mode=="add":
           self.controller.add_task(new)
       else:
           self.controller.update_task(self.task_obj, new)
+     # Refresh dashboard and close popup 
       self.dashboard.refresh()
       self.win.destroy()
 
