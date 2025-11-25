@@ -1,7 +1,6 @@
 # task_manager.py
 import shelve
 from datetime import datetime
-
 class Task:
     def __init__(self, title, description, category, due_date, priority, completion_status="Not Started"):
         self.title = title
@@ -29,7 +28,9 @@ class TaskController:
         with shelve.open(self.filename) as db:
             db["tasks"] = self.tasks
 
+    # CRUD
     def add_task(self, t):
+        # Reset tasks after 20 completed tasks
         if len(self.tasks) >= 20:
             self.tasks = []
         self.tasks.append(t)
@@ -71,3 +72,6 @@ class TaskController:
             return sorted(tasks, key=lambda t: t.due_date)[0]
         except:
             return None
+
+
+   
