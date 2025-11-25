@@ -42,31 +42,33 @@ class Task:
 
 
 
-
+# Operations on tasks
 class TaskController:
   def __init__(self, filename="plantivity_data"):
       self.filename = filename
       self.tasks = []
       self.load()
-
+# Load tasks from shelve database 
   def load(self):
       try:
           with shelve.open(self.filename) as db:
               self.tasks = db.get("tasks", [])
       except:
           self.tasks = []
-
+# Save tasks to shelve database
   def save(self):
       with shelve.open(self.filename) as db:
           db["tasks"] = self.tasks
 
   # CRUD
+# Add new task
   def add_task(self, t):
+# If >20 tasks, reset
       if len(self.tasks) >= 20:
           self.tasks = []
       self.tasks.append(t)
       self.save()
-
+# Replace old task with updated task
   def update_task(self, old_task, new_task):
       for i, t in enumerate(self.tasks):
           if t.title == old_task.title:
@@ -74,7 +76,7 @@ class TaskController:
               self.save()
               return True
       return False
-
+# Delete a task
   def delete_task(self, title):
       for t in list(self.tasks):
           if t.title == title:
@@ -83,23 +85,23 @@ class TaskController:
               return True
       return False
 
-
+# Return full task list
   def get_all_tasks(self):
       return self.tasks
-
+# Return completed tasks
   def get_completed_tasks(self):
       return [t for t in self.tasks if t.completion_status == "Completed"]
-
+# Return percentage of tasks complete
   def get_completion_percentage(self):
       if len(self.tasks) == 0:
           return 0
       return round((len(self.get_completed_tasks()) / len(self.tasks)) * 100, 2)
 
-
+# Return incomplete tasks
   def get_incomplete_tasks(self):
       return [t for t in self.tasks if t.completion_status != "Completed"]
 
-
+# Return next upcoming task
   def get_next_task(self):
       tasks = self.get_incomplete_tasks()
       try:
