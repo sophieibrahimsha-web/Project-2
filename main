@@ -182,6 +182,7 @@ class CalendarView(tk.Toplevel):
 class ProgressView(tk.Toplevel):
   def __init__(self, parent, controller):
       super().__init__(parent)
+#Window
       self.title("Plantivity ~ Progress")
       self.geometry("700x400")
       self.controller = controller
@@ -201,7 +202,7 @@ class ProgressView(tk.Toplevel):
       self.load_images()
       self.refresh()
 
-
+# Load plant stage images & background
   def load_images(self):
       def load_stage(path):
           try:
@@ -209,13 +210,14 @@ class ProgressView(tk.Toplevel):
               return ImageTk.PhotoImage(img)
           except:
               return None
-
+# Plant growth stages
       self.stages = [
           load_stage("sprout.png"),
           load_stage("seedling.png"),
           load_stage("budding.png"),
           load_stage("flower.png")
       ]
+# Dirt Background image
       try:
           bg = Image.open("dirt.png").resize((680, 300))
           self.bg_img = ImageTk.PhotoImage(bg)
@@ -223,17 +225,15 @@ class ProgressView(tk.Toplevel):
           self.bg_img = None
 
 
-
-
+# Calculate which stage flower is in
   def calculate_stage(self):
       completed = len(self.controller.get_completed_tasks())
       if completed == 0:
           return -1, 0
+# Each 4 completed tasks = 1 flower
       stage_index = (completed - 1) % 4
       full_flowers = (completed - 1) // 4
       return stage_index, full_flowers
-
-
 
 
   def refresh(self):
@@ -243,6 +243,8 @@ class ProgressView(tk.Toplevel):
       if self.bg_img:
           self.canvas.create_image(0, 0, image=self.bg_img, anchor="nw")
       stage_index, full_flowers = self.calculate_stage()
+
+  # Show messgae if no tasks are complete
       if stage_index == -1:
           self.canvas.create_text(
               canvas_width // 2, canvas_height // 2,
@@ -251,19 +253,21 @@ class ProgressView(tk.Toplevel):
               fill="white"
           )
           return
+
+# Plant placement
       x_start = 80
       spacing = 130
       y_pos = canvas_height - 90
+# Draw full flowers
       for i in range(full_flowers):
           if self.stages[-1]:
               self.canvas.create_image(x_start + i * spacing, y_pos, image=self.stages[-1])
+# Draw current stage of plant
       cur_img = self.stages[stage_index]
       if cur_img:
           self.canvas.create_image(x_start + full_flowers * spacing, y_pos, image=cur_img)
 
-
-
-
+# Return to dashboard
   def go_home(self):
       self.destroy()
       root = tk.Tk()
