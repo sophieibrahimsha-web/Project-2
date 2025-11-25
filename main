@@ -18,9 +18,8 @@ from PIL import Image, ImageTk
 
 
 
-# ------------------------
+
 # Dropdown Options
-# ------------------------
 category_options = ["School", "Work", "Personal", "Health", "Other"]
 priority_options = ["High", "Medium", "Low"]
 completion_options = ["Not Started", "In Progress", "Completed"]
@@ -28,9 +27,7 @@ completion_options = ["Not Started", "In Progress", "Completed"]
 
 
 
-# ------------------------
 # Task Model + Controller
-# ------------------------
 class Task:
   def __init__(self, title, description, category, due_date, priority, completion_status="Not Started"):
       self.title = title
@@ -279,9 +276,8 @@ class ProgressView(tk.Toplevel):
 
 
 
-# ------------------------
 # Main Welcome Dashboard
-# ------------------------
+
 class MainDashboard:
   def __init__(self, root):
       self.root = root
@@ -410,9 +406,8 @@ class MainDashboard:
 
 
 
-# ------------------------
 # Task Dashboard
-# ------------------------
+
 class Dashboard:
   def __init__(self, root):
       self.root = root
@@ -539,9 +534,8 @@ class Dashboard:
 
 
 
-# ------------------------
 # Task Popup
-# ------------------------
+
 class TaskPopup:
   def __init__(self, dashboard, mode, task_obj=None):
       self.dashboard = dashboard
@@ -637,9 +631,8 @@ class TaskPopup:
       self.win.destroy()
 
 
-# ------------------------
 # Run App
-# ------------------------
+
 if __name__ == "__main__":
   root = tk.Tk()
   MainDashboard(root)
