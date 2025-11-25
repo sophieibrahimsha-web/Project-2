@@ -1,0 +1,71 @@
+class Task:
+    def __init__(self, title, description, category, due_date, priority, completion_status="Not Started"):
+        self.title = title
+        self.description = description
+        self.category = category
+        self.due_date = due_date
+        self.priority = priority
+        self.completion_status = completion_status
+
+
+class TaskController:
+    def __init__(self, filename="plantivity_data"):
+        self.filename = filename
+        self.tasks = []
+        self.load()
+
+    def load(self):
+        try:
+            with shelve.open(self.filename) as db:
+                self.tasks = db.get("tasks", [])
+        except:
+            self.tasks = []
+
+    def save(self):
+        with shelve.open(self.filename) as db:
+            db["tasks"] = self.tasks
+
+    # CRUD
+    def add_task(self, t):
+        # Reset tasks after 20 completed tasks
+        if len(self.tasks) >= 20:
+            self.tasks = []
+        self.tasks.append(t)
+        self.save()
+
+    def update_task(self, old_task, new_task):
+        for i, t in enumerate(self.tasks):
+            if t.title == old_task.title:
+                self.tasks[i] = new_task
+                self.save()
+                return True
+        return False
+
+    def delete_task(self, title):
+        for t in list(self.tasks):
+            if t.title == title:
+                self.tasks.remove(t)
+                self.save()
+                return True
+        return False
+
+    def get_all_tasks(self):
+        return self.tasks
+
+    def get_completed_tasks(self):
+        return [t for t in self.tasks if t.completion_status == "Completed"]
+
+    def get_completion_percentage(self):
+        if len(self.tasks) == 0:
+            return 0
+        return round((len(self.get_completed_tasks()) / len(self.tasks)) * 100, 2)
+
+    def get_incomplete_tasks(self):
+        return [t for t in self.tasks if t.completion_status != "Completed"]
+
+    def get_next_task(self):
+        tasks = self.get_incomplete_tasks()
+        try:
+            return sorted(tasks, key=lambda t: t.due_date)[0]
+        except:
+            return None
