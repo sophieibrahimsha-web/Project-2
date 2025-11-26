@@ -95,10 +95,13 @@ class TaskController:
     # Return next upcoming task
     def get_next_task(self):
         tasks = self.get_incomplete_tasks()
+        if not tasks:
+            return None
         try:
             return sorted(tasks, key=lambda t: t.due_date)[0]
-        except (TypeError, ValueError, AttributeError):
+        except Exception:
             return None
+
 
 # Calendar
 class CalendarView(tk.Toplevel):
@@ -108,7 +111,7 @@ class CalendarView(tk.Toplevel):
         self.geometry("900x500")
         self.controller = controller
 
-        #Home button
+        # Home button
         home_frame = tk.Frame(self)
         home_frame.grid(row=0, column=0, sticky="w", padx=10, pady=5)
         tk.Button(home_frame, text="Home", command=self.destroy).pack()
@@ -117,7 +120,7 @@ class CalendarView(tk.Toplevel):
             self, selectmode="day", date_pattern="yyyy-mm-dd", showweeknumbers=False
         )
         self.calendar.grid(row=1, column=0, padx=20, pady=20)
-        self.calendar.bind("<<CalendarSelected>>", self.on_select)
+        self.calendar.bind("<<CalendarSelected>>", self.on_select)  # passes event
 
         right = tk.Frame(self)
         right.grid(row=1, column=1, padx=20)
@@ -139,20 +142,24 @@ class CalendarView(tk.Toplevel):
                 self.calendar.calevent_create(d, t.title, tag)
             except (ValueError, TypeError):
                 pass
+
         try:
             self.calendar.tag_config("task", background="#ffd54f")
             self.calendar.tag_config("done", background="#81c784")
         except tk.TclError:
             pass
 
-    def on_select(self):
+    def on_select(self, event=None):   # ← FIXED HERE
         d = self.calendar.get_date()
         self.listbox.delete(0, tk.END)
         found = False
         for t in self.controller.get_all_tasks():
             if t.due_date == d:
                 found = True
-                self.listbox.insert(tk.END, f"{t.title} — {t.category} — {t.priority} — {t.completion_status}")
+                self.listbox.insert(
+                    tk.END,
+                    f"{t.title} — {t.category} — {t.priority} — {t.completion_status}"
+                )
         if not found:
             self.listbox.insert(tk.END, "No tasks on this date.")
 
