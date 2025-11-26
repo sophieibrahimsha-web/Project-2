@@ -1,4 +1,8 @@
 # PLANTIVITY
+# Plantivity is a "plant growth" progress task tracker. Add all your tasks of all categories and 
+#watch your garden grow as you cpmplete tasks. Every 4 completed tasks grow a full flower through 
+#4 stages; sprout, seedling, budding and flower. After 20 tasks are completed and 5 full flowers 
+#are grown, your progress resets and you can start growing a brand new one! 
 # Main Dashboard + Task Tracker + CalendarView + ProgressView
 # Task model + TaskController (shelve)
 
