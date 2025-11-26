@@ -97,14 +97,14 @@ class TaskController:
         return [t for t in self.tasks if t.completion_status != "Completed"]
 
     # Return next upcoming task
-   def get_next_task(self):
-    tasks = self.get_incomplete_tasks()
-    if not tasks:
-        return None
-    try:
-        return sorted(tasks, key=lambda t: t.due_date)[0]
-    except Exception:
-        return None
+    def get_next_task(self):
+        tasks = self.get_incomplete_tasks()
+        if not tasks:
+            return None
+        try:
+            return sorted(tasks, key=lambda t: t.due_date)[0]
+        except Exception:
+            return None
 
 # Calendar
 # Calendar
