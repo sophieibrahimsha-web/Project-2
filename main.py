@@ -282,18 +282,26 @@ class MainDashboard:
         self.create_header()
         # Create navigation buttons
         self.create_cards()
-
+    
     def create_header(self):
-        # App title
+        # Main title
         tk.Label(
             self.root, text="Welcome to Plantivity!",
             font=("Helvetica", 26, "bold"), bg="#F8F8F8"
-        ).pack(pady=60)
-        # App subtitle 
+        ).pack(pady=(60, 5))  # Reduced bottom padding so subtitle sits closer
+
+        # Subtitle under the title
         tk.Label(
             self.root, text="Your personal productivity assistant",
             font=("Helvetica", 16), bg="#F8F8F8"
-        ).pack(pady=5)
+        ).pack(pady=(0, 20))  # Pushes it up closer to the title, then a gap
+
+        # Motivation line
+        tk.Label(
+            self.root,
+            text="Every task you finish helps your garden bloom. Keep planting!",
+            font=("Helvetica", 14, "italic"), fg="#4C7A4A", bg="#F8F8F8"
+        ).pack(pady=10) 
 
     def create_cards(self):
         # Frame for main navigation buttons
