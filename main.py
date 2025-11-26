@@ -5,9 +5,10 @@
 #are grown, your progress resets and you can start growing a brand new one! 
 # Main Dashboard + Task Tracker + CalendarView + ProgressView
 # Task model + TaskController (shelve)
-
 #All images used in this code were produced using AI
 
+
+#import
 import shelve
 import tkinter as tk
 from tkinter import ttk, messagebox
