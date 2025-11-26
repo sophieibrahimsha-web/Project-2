@@ -93,16 +93,16 @@ class TaskController:
         return [t for t in self.tasks if t.completion_status != "Completed"]
 
     # Return next upcoming task
-    def get_next_task(self):
-        tasks = self.get_incomplete_tasks()
-        if not tasks:
-            return None
-        try:
-            return sorted(tasks, key=lambda t: t.due_date)[0]
-        except Exception:
-            return None
+   def get_next_task(self):
+    tasks = self.get_incomplete_tasks()
+    if not tasks:
+        return None
+    try:
+        return sorted(tasks, key=lambda t: t.due_date)[0]
+    except Exception:
+        return None
 
-
+# Calendar
 # Calendar
 class CalendarView(tk.Toplevel):
     def __init__(self, parent, controller: TaskController):
@@ -222,6 +222,7 @@ class ProgressView(tk.Toplevel):
         full_flowers = (completed - 1) // 4
         return stage_index, full_flowers
 
+    # Clear canvas and redraw background & current growth stage
     def refresh(self):
         self.canvas.delete("all")
         canvas_height = 300
@@ -273,31 +274,36 @@ class MainDashboard:
             self.bg_canvas.lower("all")
         except (FileNotFoundError, OSError):
             pass
-
+        # Create dashboard title + subtitle
         self.create_header()
+        # Create navigation buttons
         self.create_cards()
 
     def create_header(self):
+        # App title
         tk.Label(
             self.root, text="Welcome to Plantivity!",
             font=("Helvetica", 26, "bold"), bg="#F8F8F8"
         ).pack(pady=60)
+        # App subtitle 
         tk.Label(
             self.root, text="Your personal productivity assistant",
             font=("Helvetica", 16), bg="#F8F8F8"
         ).pack(pady=5)
 
     def create_cards(self):
+        # Frame for main navigation buttons
         button_frame = tk.Frame(self.root, bg="#F8F8F8")
         button_frame.pack(pady=20)
 
+        # Style for rounded buttons
         style = ttk.Style()
         style.configure(
             "Rounded.TButton",
             font=("Helvetica", 16, "bold"),
             padding=12
         )
-
+        # Hover effects
         def on_enter(e):
             e.widget.configure(style="Hover.TButton")
         def on_leave(e):
@@ -309,7 +315,7 @@ class MainDashboard:
             padding=12,
             background="#e8ffe8"
         )
-
+        # Helper function to make consistent buttons
         def make_btn(text, command):
             btn = ttk.Button(
                 button_frame,
@@ -322,17 +328,20 @@ class MainDashboard:
             btn.bind("<Enter>", on_enter)
             btn.bind("<Leave>", on_leave)
             return btn
-
+        # Main menu buttons
         make_btn("Task Tracker", self.open_task_dashboard)
         make_btn("Calendar View", self.open_calendar)
         make_btn("Progress Tracker", self.open_progress)
 
+    # Open task dashboard screen
     def open_task_dashboard(self):
         Dashboard(self.root)
 
+    # Open calendar view
     def open_calendar(self):
         CalendarView(self.root, self.controller)
 
+    # Open flower progress view
     def open_progress(self):
         ProgressView(self.root, self.controller)
 
@@ -340,6 +349,7 @@ class MainDashboard:
 # Task Dashboard + Filtering
 class Dashboard:
     def __init__(self, parent):
+        # Create dashboard window
         self.root = tk.Toplevel(parent)
         self.root.title("Plantivity Dashboard")
         self.root.geometry("1000x650")
@@ -355,6 +365,7 @@ class Dashboard:
         self.filter_priority = tk.StringVar(value="All")
         self.filter_status = tk.StringVar(value="All")
 
+        # Build dashboard interface
         self.create_home_button()
         self.create_header()
         self.create_filter()
@@ -363,11 +374,13 @@ class Dashboard:
         self.refresh()
 
     def create_home_button(self):
+        # Sidebar home button
         frame = tk.Frame(self.root)
         frame.pack(pady=10, anchor="w", padx=10)
         tk.Button(frame, text="Home", command=self.root.destroy, width=10).pack()
 
     def create_header(self):
+        # Top bar to show next task & progress percentage 
         frame = tk.Frame(self.root)
         frame.pack(fill="x", pady=10)
         self.next_label = tk.Label(frame, text="Next Task: None", font=("Arial", 14, "bold"))
@@ -382,18 +395,21 @@ class Dashboard:
         frame = tk.Frame(self.root)
         frame.pack(fill="x", padx=20, pady=5)
 
+        # Category filter
         tk.Label(frame, text="Category:").pack(side="left", padx=(0, 5))
         cat_options = ["All"] + category_options
         cat_menu = ttk.Combobox(frame, values=cat_options, textvariable=self.filter_category, width=15)
         cat_menu.pack(side="left", padx=(0, 15))
         cat_menu.bind("<<ComboboxSelected>>", lambda e=None: self.refresh())
 
+        # Priority filter
         tk.Label(frame, text="Priority:").pack(side="left", padx=(0, 5))
         pri_options = ["All"] + priority_options
         pri_menu = ttk.Combobox(frame, values=pri_options, textvariable=self.filter_priority, width=15)
         pri_menu.pack(side="left", padx=(0, 15))
         pri_menu.bind("<<ComboboxSelected>>", lambda e=None: self.refresh())
 
+        # Status filter
         tk.Label(frame, text="Status:").pack(side="left", padx=(0, 5))
         status_options = ["All"] + completion_options
         status_menu = ttk.Combobox(frame, values=status_options, textvariable=self.filter_status, width=15)
@@ -415,6 +431,7 @@ class Dashboard:
         self.tree.pack(fill="both", expand=True)
 
     def create_buttons(self):
+    # Button row of add, edit, delete, calendar, progress
         frame = tk.Frame(self.root)
         frame.pack(pady=10)
         tk.Button(frame, text="Add Task", width=15, command=self.add).grid(row=0, column=0, padx=10)
@@ -425,6 +442,7 @@ class Dashboard:
 
     # Refresh Tree with Filters
     def refresh(self):
+        # Update table based on filters
         self.tree.delete(*self.tree.get_children())
         for t in self.controller.get_all_tasks():
             # Apply filters
@@ -435,27 +453,32 @@ class Dashboard:
             if self.filter_status.get() != "All" and t.completion_status != self.filter_status.get():
                 continue
             self.tree.insert("", "end", values=(t.title, t.description, t.category, t.due_date, t.priority, t.completion_status))
+        # Update next task & progress display
         nxt = self.controller.get_next_task()
         self.next_label.config(text=f"Next Task: {nxt.title}" if nxt else "Next Task: None")
         pct = self.controller.get_completion_percentage()
         self.progress_label.config(text=f"Progress: {pct}%")
 
     def clear_filters(self):
+    # Reset filters to "All"
         self.filter_category.set("All")
         self.filter_priority.set("All")
         self.filter_status.set("All")
         self.refresh()
 
     def get_selected_title(self):
+    # Get title of selected row
         sel = self.tree.selection()
         if not sel:
             return None
         return self.tree.item(sel[0])["values"][0]
 
     def add(self):
+    # Open add task window
         TaskPopup(self, mode="add")
 
     def edit(self):
+    # Edit selected task
         title = self.get_selected_title()
         if not title:
             messagebox.showwarning("Select task", "Please select a task to edit.")
@@ -466,6 +489,7 @@ class Dashboard:
                 return
 
     def delete(self):
+    # Delete selected task
         title = self.get_selected_title()
         if not title:
             messagebox.showwarning("Delete Task", "Select a task first.")
@@ -475,14 +499,17 @@ class Dashboard:
             self.refresh()
 
     def open_calendar(self):
+    # Open task calendar view 
         CalendarView(self.root, self.controller)
 
     def open_progress(self):
+    # Open progress view
         ProgressView(self.root, self.controller)
 
 # Task Popup
 class TaskPopup:
     def __init__(self, dashboard, mode, task_obj=None):
+        # Add/Edit task window setup
         self.dashboard = dashboard
         self.controller = dashboard.controller
         self.mode = mode
@@ -491,6 +518,7 @@ class TaskPopup:
         self.win.title("Add Task" if mode=="add" else "Edit Task")
         self.win.geometry("400x450")
 
+        # Form fields
         tk.Label(self.win, text="Title").pack()
         self.title_entry = tk.Entry(self.win, width=40)
         self.title_entry.pack()
@@ -521,6 +549,7 @@ class TaskPopup:
             self.load()
 
     def load(self):
+    # Fil form with existing task data
         t = self.task_obj
         self.title_entry.insert(0, t.title)
         self.desc_entry.insert(0, t.description)
@@ -530,6 +559,7 @@ class TaskPopup:
         self.status_box.set(t.completion_status)
 
     def save(self):
+    # Save new or edited task
         new = Task(
             title=self.title_entry.get(),
             description=self.desc_entry.get(),
