@@ -6,6 +6,8 @@
 # Main Dashboard + Task Tracker + CalendarView + ProgressView
 # Task model + TaskController (shelve)
 
+#All images used in this code were produced using AI
+
 import shelve
 import tkinter as tk
 from tkinter import ttk, messagebox
