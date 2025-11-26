@@ -107,7 +107,6 @@ class TaskController:
             return None
 
 # Calendar
-# Calendar
 class CalendarView(tk.Toplevel):
     def __init__(self, parent, controller: TaskController):
         super().__init__(parent)
@@ -302,7 +301,7 @@ class MainDashboard:
             text="Every task you finish helps your garden bloom. Keep planting!",
             font=("Helvetica", 14, "italic"), fg="#4C7A4A", bg="#F8F8F8"
         ).pack(pady=10) 
-
+#Create buttons for main dashboard
     def create_cards(self):
         # Frame for main navigation buttons
         button_frame = tk.Frame(self.root, bg="#F8F8F8")
@@ -315,7 +314,7 @@ class MainDashboard:
             font=("Helvetica", 16, "bold"),
             padding=12
         )
-        # Hover effects
+        # Blue Hover effects
         def on_enter(e):
             e.widget.configure(style="Hover.TButton")
         def on_leave(e):
